@@ -28,10 +28,11 @@ interface HolidayFetchResponsError {
 }
 
 interface usePublicHolidaysProps {
+  year: number;
   countryCode: CountryCodesUnion;
 }
 
-const usePublicHolidays = ({ countryCode }: usePublicHolidaysProps) => {
+const usePublicHolidays = ({ year, countryCode }: usePublicHolidaysProps) => {
   const [publicHolidays, setPublicHolidays] = useState<HolidayType[] | null>(
     null
   );
@@ -40,7 +41,7 @@ const usePublicHolidays = ({ countryCode }: usePublicHolidaysProps) => {
   useEffect(() => {
     const fetchPublicHolidays = async () => {
       const datesResposne = await fetch(
-        "https://date.nager.at/api/v3/publicholidays/2023/PL"
+        `https://date.nager.at/api/v3/publicholidays/${year}/${countryCode}`
       );
 
       if (!datesResposne.ok) {

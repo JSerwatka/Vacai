@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
 import Calendar from "./components/Calendar/Calendar";
 import { CountryCodesUnion } from "./types/CountryCodes";
+import usePublicHolidays from "./hooks/usePublicHolidays";
+import ControlPanel from "./components/ControlPanel/ControlPanel";
+import "./App.css";
 
 function App() {
-  const [vacationDays, setVacationDays] = useState<number>(0);
+  const { holidays, error } = usePublicHolidays({
+    year: 2023,
+    countryCode: "PL",
+  });
 
   return (
-    <>
-      <input
-        type="number"
-        placeholder="Ilość dni urlopu"
-        value={vacationDays}
-        onChange={(e) => setVacationDays(Number(e.target.value))}
-      />
+    <div
+      style={{
+        display: "flex",
+      }}
+    >
       <Calendar />
-    </>
+      <ControlPanel />
+    </div>
   );
 }
 

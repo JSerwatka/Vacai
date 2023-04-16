@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import "./Calendar.css"; // Import your CSS file for the calendar
+import styles from "./Calendar.module.css"; // Import your CSS file for the calendar
 import isWeekend from "date-fns/isWeekend";
 import isWithinInterval from "date-fns/isWithinInterval";
 import isSameDay from "date-fns/isSameDay";
@@ -45,31 +45,38 @@ const Calendar = () => {
   };
 
   const modifiersStyles = {
-    weekendDays: "weekendDays",
-    betweenDates: "betweenDates",
-    startRange: "startEndRange",
-    endRange: "startEndRange",
+    weekendDays: styles.weekendDays,
+    betweenDates: styles.betweenDates,
+    startRange: styles.startEndRange,
+    endRange: styles.startEndRange,
     // highlighted: "highlighted",
   };
 
   return (
-    <DayPicker
-      mode="range"
-      disableNavigation
-      numberOfMonths={12}
-      selected={range}
-      weekStartsOn={1}
-      onSelect={setRange}
-      // onDayMouseEnter={handleDayMouseEnter}
-      styles={{
-        months: {
-          flexWrap: "wrap",
-        },
+    <div
+      style={{
+        maxWidth: "700px",
+        border: "1px solid black",
       }}
-      modifiers={modifiers}
-      modifiersClassNames={modifiersStyles}
-      // onDayClick={handleDayClick}
-    />
+    >
+      <DayPicker
+        mode="range"
+        disableNavigation
+        numberOfMonths={12}
+        selected={range}
+        weekStartsOn={1}
+        onSelect={setRange}
+        // onDayMouseEnter={handleDayMouseEnter}
+        styles={{
+          months: {
+            flexWrap: "wrap",
+          },
+        }}
+        modifiers={modifiers}
+        modifiersClassNames={modifiersStyles}
+        // onDayClick={handleDayClick}
+      />
+    </div>
   );
 };
 
