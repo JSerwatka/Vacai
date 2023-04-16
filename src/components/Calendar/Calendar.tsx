@@ -62,6 +62,7 @@ const Calendar = () => {
       <DayPicker
         mode="range"
         disableNavigation
+        defaultMonth={new Date(2023, 0)} // TODO use relative years
         numberOfMonths={12}
         selected={range}
         weekStartsOn={1}
@@ -70,6 +71,8 @@ const Calendar = () => {
         styles={{
           months: {
             flexWrap: "wrap",
+            justifyContent: "center",
+            rowGap: "30px",
           },
         }}
         modifiers={modifiers}
