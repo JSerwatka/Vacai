@@ -18,6 +18,18 @@ const Calendar = () => {
   //   setHighlightedRange(newRange);
   // };
 
+  // const handleDayClick = (day: Date) => {
+  //   if (!range?.from || range.to) {
+  //     setRange({ from: day, to: undefined });
+  //   } else if (day < range.from) {
+  //     setRange({ from: day, to: range.from });
+  //   } else if (isSameDay(day, range.from)) {
+  //     setRange({ from: day, to: day });
+  //   } else {
+  //     setRange({ ...range, to: day });
+  //   }
+  // };
+
   const modifiers = {
     weekendDays: (date: Date) => isWeekend(date),
     betweenDates: (date: Date) => {
@@ -56,6 +68,7 @@ const Calendar = () => {
       }}
       modifiers={modifiers}
       modifiersClassNames={modifiersStyles}
+      // onDayClick={handleDayClick}
     />
   );
 };
