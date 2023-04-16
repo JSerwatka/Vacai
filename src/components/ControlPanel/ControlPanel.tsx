@@ -13,7 +13,6 @@ const ControlPanel = ({}: ControlPanelProps) => {
         flexDirection: "column",
       }}
     >
-      gasd
       <input
         type="number"
         placeholder="Ilość dni urlopu"
