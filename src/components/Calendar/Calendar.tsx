@@ -4,7 +4,11 @@ import "react-day-picker/dist/style.css";
 import styles from "./Calendar.module.css";
 import isSameDay from "date-fns/isSameDay";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
-import { DateRangeRequired, DaysHoveredType, SavedTripType } from "../../App";
+import {
+  DateRangeRequired,
+  DaysHoveredType,
+  SavedVacationType,
+} from "../../App";
 import { HolidayType } from "../../types/HolidayType";
 import isBefore from "date-fns/isBefore";
 import {
@@ -16,26 +20,26 @@ import { Interval } from "date-fns";
 import { isRangeSelected } from "../../utils/rangeSelectedTypeGuard";
 
 interface CalendarProps {
-  tripRange: DateRange | undefined;
-  setTripRange: (dateRange: DateRange) => void;
+  vacationSelected: DateRange | undefined;
+  setVacationSelected: (dateRange: DateRange) => void;
   setDaysHovered: ({ calendar, bussiness }: DaysHoveredType) => void;
   holidays: HolidayType[] | null;
-  tripColor: string;
-  savedTrips: SavedTripType[];
+  vacationColor: string;
+  savedVacations: SavedVacationType[];
 }
 
 const Calendar = ({
-  tripRange,
-  setTripRange,
+  vacationSelected,
+  setVacationSelected,
   setDaysHovered,
   holidays,
-  tripColor,
-  savedTrips,
+  vacationColor,
+  savedVacations,
 }: CalendarProps) => {
   const handleDayMouseEnter = (date: Date) => {
-    if (!tripRange?.from || tripRange.to) return;
+    if (!vacationSelected?.from || vacationSelected.to) return;
 
-    if (isBefore(date, tripRange.from)) {
+    if (isBefore(date, vacationSelected.from)) {
       setDaysHovered({
         calendar: 0,
         bussiness: 0,
@@ -44,38 +48,46 @@ const Calendar = ({
     }
 
     setDaysHovered({
-      calendar: differenceInCalendarDays(date, tripRange.from) + 1,
-      bussiness: differenceInBusinessDays(date, tripRange.from, holidays),
+      calendar: differenceInCalendarDays(date, vacationSelected.from) + 1,
+      bussiness: differenceInBusinessDays(
+        date,
+        vacationSelected.from,
+        holidays
+      ),
     });
   };
 
   const handleDayClick = (day: Date) => {
     const startNewRange =
-      !tripRange?.from || tripRange.to || isBefore(day, tripRange?.from);
+      !vacationSelected?.from ||
+      vacationSelected.to ||
+      isBefore(day, vacationSelected?.from);
 
     if (startNewRange) {
-      setTripRange({ from: day, to: undefined });
+      setVacationSelected({ from: day, to: undefined });
     } else {
-      setTripRange({ ...tripRange, to: day });
+      setVacationSelected({ ...vacationSelected, to: day });
     }
   };
 
   const modifiers = {
     weekendDays: (date: Date) => isWeekendOrHoliday(date, holidays),
     betweenRangeDays: (date: Date) => {
-      if (isRangeSelected(tripRange)) {
-        return isRangeMiddle(date, tripRange);
+      if (isRangeSelected(vacationSelected)) {
+        return isRangeMiddle(date, vacationSelected);
       }
       return false;
     },
     startEndRangeDays: (date: Date) => {
-      const isStartDay = tripRange?.from
-        ? isRangeStart(date, tripRange.from)
+      const isStartDay = vacationSelected?.from
+        ? isRangeStart(date, vacationSelected.from)
         : false;
-      const isEndDay = tripRange?.to ? isRangeEnd(date, tripRange.to) : false;
+      const isEndDay = vacationSelected?.to
+        ? isRangeEnd(date, vacationSelected.to)
+        : false;
       return isStartDay || isEndDay;
     },
-    ...getSavedTripsModifiers(savedTrips),
+    ...getSavedTripsModifiers(savedVacations),
   };
 
   const modifiersClassNames = {
@@ -83,9 +95,9 @@ const Calendar = ({
   };
 
   const rangesStyles = {
-    startEndRangeDays: getMainRangeStyles(tripColor),
-    betweenRangeDays: getSecondaryRangeStyles(tripColor),
-    ...getSavedTripsStyles(savedTrips),
+    startEndRangeDays: getMainRangeStyles(vacationColor),
+    betweenRangeDays: getSecondaryRangeStyles(vacationColor),
+    ...getSavedTripsStyles(savedVacations),
   };
 
   return (
@@ -95,7 +107,7 @@ const Calendar = ({
         disableNavigation
         defaultMonth={new Date(2023, 0)} // TODO use relative years
         numberOfMonths={12}
-        selected={tripRange}
+        selected={vacationSelected}
         weekStartsOn={1}
         onDayMouseEnter={handleDayMouseEnter}
         classNames={{
@@ -164,10 +176,10 @@ const isRangeMiddle = (date: Date, range: DateRangeRequired) => {
   return date > range.from && date < range.to;
 };
 
-const getSavedTripsModifiers = (savedTrips: SavedTripType[]) => {
+const getSavedTripsModifiers = (savedVacations: SavedVacationType[]) => {
   const savedTripsModifiers = new Map();
 
-  savedTrips.forEach((savedTrip) => {
+  savedVacations.forEach((savedTrip) => {
     savedTripsModifiers.set(savedTrip.name + "_start", (date: Date) =>
       isRangeStart(date, savedTrip.range.from)
     );
@@ -182,10 +194,10 @@ const getSavedTripsModifiers = (savedTrips: SavedTripType[]) => {
   return Object.fromEntries(savedTripsModifiers);
 };
 
-const getSavedTripsStyles = (savedTrips: SavedTripType[]) => {
+const getSavedTripsStyles = (savedVacations: SavedVacationType[]) => {
   const savedTripsModifiersStyles = new Map();
 
-  savedTrips.forEach((savedTrip) => {
+  savedVacations.forEach((savedTrip) => {
     savedTripsModifiersStyles.set(
       savedTrip.name + "_start",
       getMainRangeStyles(savedTrip.color, "start")

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DaysHoveredType, SavedTripType } from "../../App";
+import { DaysHoveredType, SavedVacationType } from "../../App";
 import { DateRange } from "react-day-picker";
 import format from "date-fns/format";
 import { CirclePicker, ColorResult } from "react-color";
@@ -8,46 +8,46 @@ import { isRangeSelected } from "../../utils/rangeSelectedTypeGuard";
 
 interface ControlPanelProps {
   daysHovered: DaysHoveredType;
-  tripRange: DateRange | undefined;
-  tripColor: string;
-  setTripColor: (color: string) => void;
-  savedTrips: SavedTripType[];
-  addSavedTrip: (newSavedTrip: SavedTripType) => void;
+  vacationSelected: DateRange | undefined;
+  vacationColor: string;
+  setVacationColor: (color: string) => void;
+  savedVacations: SavedVacationType[];
+  addSavedVacation: (newSavedTrip: SavedVacationType) => void;
 }
 
 const dateFormat = "d MMM y";
 
 const ControlPanel = ({
   daysHovered,
-  tripRange,
-  tripColor,
-  setTripColor,
-  savedTrips,
-  addSavedTrip,
+  vacationSelected,
+  vacationColor,
+  setVacationColor,
+  savedVacations,
+  addSavedVacation,
 }: ControlPanelProps) => {
   const [vacationDays, setVacationDays] = useState<number>(0);
   const [tripName, setTripName] = useState<string>("");
   const [colorModalOpened, setColorModalOpened] = useState<boolean>();
 
   const selectedRangeString = (): string => {
-    if (!isRangeSelected(tripRange)) {
+    if (!isRangeSelected(vacationSelected)) {
       return "";
     }
-    return `${format(tripRange.from, dateFormat)} - ${format(
-      tripRange.to,
+    return `${format(vacationSelected.from, dateFormat)} - ${format(
+      vacationSelected.to,
       dateFormat
     )}`;
   };
 
   const handleTripSave = () => {
-    if (!tripRange?.from || !tripRange?.to) return;
+    if (!vacationSelected?.from || !vacationSelected?.to) return;
 
-    addSavedTrip({
+    addSavedVacation({
       name: tripName,
-      color: tripColor,
+      color: vacationColor,
       range: {
-        from: tripRange.from,
-        to: tripRange.to,
+        from: vacationSelected.from,
+        to: vacationSelected.to,
       },
     });
   };
@@ -64,7 +64,7 @@ const ControlPanel = ({
       <div>Bussiness days to be selected: {daysHovered.bussiness}</div>
       <h1>Trips:</h1>
 
-      {savedTrips.map((savedTrip) => (
+      {savedVacations.map((savedTrip) => (
         <div
           style={{
             display: "flex",
@@ -92,7 +92,7 @@ const ControlPanel = ({
             type="button"
             onClick={() => setColorModalOpened((prevValue) => !prevValue)}
             style={{
-              backgroundColor: tripColor,
+              backgroundColor: vacationColor,
             }}
           >
             select color
@@ -100,9 +100,9 @@ const ControlPanel = ({
           {colorModalOpened ? (
             <div className={styles.color_picker_container}>
               <CirclePicker
-                color={tripColor}
+                color={vacationColor}
                 onChangeComplete={(color) => {
-                  setTripColor(color.hex);
+                  setVacationColor(color.hex);
                   setColorModalOpened(false);
                 }}
                 circleSpacing={5}
@@ -113,7 +113,7 @@ const ControlPanel = ({
         <input type="text" disabled value={selectedRangeString()} />
         <button
           type="button"
-          disabled={!isRangeSelected(tripRange) || !tripName}
+          disabled={!isRangeSelected(vacationSelected) || !tripName}
           onClick={handleTripSave}
         >
           save trip

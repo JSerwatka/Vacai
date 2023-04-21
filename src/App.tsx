@@ -10,7 +10,7 @@ import { DeepRequired } from "./types/DeepRequired";
 
 export type DateRangeRequired = DeepRequired<DateRange>;
 
-export interface SavedTripType {
+export interface SavedVacationType {
   color: string;
   name: string;
   range: DateRangeRequired;
@@ -27,21 +27,23 @@ function App() {
     countryCode: "PL",
   });
 
-  const [tripRange, setTripRange] = useState<DateRange | undefined>(undefined);
-  const [tripColor, setTripColor] = useState<string>("#4caf50");
+  const [vacationSelected, setVacationSelected] = useState<
+    DateRange | undefined
+  >(undefined);
+  const [vacationColor, setVacationColor] = useState<string>("#4caf50");
 
   const [daysHovered, setDaysHovered] = useState<DaysHoveredType>({
     calendar: 0,
     bussiness: 0,
   });
 
-  const [savedTrips, setSavedTrips] = useState<SavedTripType[]>([]);
+  const [savedVacations, setSavedVacations] = useState<SavedVacationType[]>([]);
 
-  const addSavedTrip = useCallback(
-    (newSavedTrip: SavedTripType) => {
-      setSavedTrips((prevValue) => [...prevValue, newSavedTrip]);
+  const addSavedVacation = useCallback(
+    (newSavedTrip: SavedVacationType) => {
+      setSavedVacations((prevValue) => [...prevValue, newSavedTrip]);
     },
-    [setSavedTrips]
+    [setSavedVacations]
   );
 
   return (
@@ -53,18 +55,18 @@ function App() {
       <Calendar
         setDaysHovered={setDaysHovered}
         holidays={holidays}
-        tripRange={tripRange}
-        setTripRange={setTripRange}
-        tripColor={tripColor}
-        savedTrips={savedTrips}
+        vacationSelected={vacationSelected}
+        setVacationSelected={setVacationSelected}
+        vacationColor={vacationColor}
+        savedVacations={savedVacations}
       />
       <ControlPanel
         daysHovered={daysHovered}
-        tripRange={tripRange}
-        tripColor={tripColor}
-        setTripColor={setTripColor}
-        savedTrips={savedTrips}
-        addSavedTrip={addSavedTrip}
+        vacationSelected={vacationSelected}
+        vacationColor={vacationColor}
+        setVacationColor={setVacationColor}
+        savedVacations={savedVacations}
+        addSavedVacation={addSavedVacation}
       />
     </div>
   );
