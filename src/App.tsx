@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Calendar from "./components/Calendar/Calendar";
 import { CountryCodesUnion } from "./types/CountryCodes";
 import usePublicHolidays from "./hooks/usePublicHolidays";
@@ -6,11 +6,12 @@ import ControlPanel from "./components/ControlPanel/ControlPanel";
 import "./App.css";
 import { HolidayType } from "./types/HolidayType";
 import { DateRange } from "react-day-picker";
+import { DeepRequired } from "./types/DeepRequired";
 
-interface SavedVacationsType {
+export interface SavedTripType {
   color: string;
   name: string;
-  range: Required<DateRange>;
+  range: DeepRequired<DateRange>;
 }
 
 export interface DaysHoveredType {
@@ -32,6 +33,15 @@ function App() {
     bussiness: 0,
   });
 
+  const [savedTrips, setSavedTrips] = useState<SavedTripType[]>([]);
+
+  const addSavedTrip = useCallback(
+    (newSavedTrip: SavedTripType) => {
+      setSavedTrips((prevValue) => [...prevValue, newSavedTrip]);
+    },
+    [setSavedTrips]
+  );
+
   return (
     <div
       style={{
@@ -44,12 +54,15 @@ function App() {
         tripRange={tripRange}
         setTripRange={setTripRange}
         tripColor={tripColor}
+        savedTrips={savedTrips}
       />
       <ControlPanel
         daysHovered={daysHovered}
         tripRange={tripRange}
         tripColor={tripColor}
         setTripColor={setTripColor}
+        savedTrips={savedTrips}
+        addSavedTrip={addSavedTrip}
       />
     </div>
   );

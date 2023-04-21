@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DaysHoveredType } from "../../App";
+import { DaysHoveredType, SavedTripType } from "../../App";
 import { DateRange } from "react-day-picker";
 import format from "date-fns/format";
 import { CirclePicker, ColorResult } from "react-color";
@@ -10,6 +10,8 @@ interface ControlPanelProps {
   tripRange: DateRange | undefined;
   tripColor: string;
   setTripColor: (color: string) => void;
+  savedTrips: SavedTripType[];
+  addSavedTrip: (newSavedTrip: SavedTripType) => void;
 }
 
 const dateFormat = "d MMM y";
@@ -19,6 +21,8 @@ const ControlPanel = ({
   tripRange,
   tripColor,
   setTripColor,
+  savedTrips,
+  addSavedTrip,
 }: ControlPanelProps) => {
   const [vacationDays, setVacationDays] = useState<number>(0);
   const [tripName, setTripName] = useState<string>("");
@@ -39,6 +43,19 @@ const ControlPanel = ({
     )}`;
   };
 
+  const handleTripSave = () => {
+    if (!tripRange?.from || !tripRange?.to) return;
+
+    addSavedTrip({
+      name: tripName,
+      color: tripColor,
+      range: {
+        from: tripRange.from,
+        to: tripRange.to,
+      },
+    });
+  };
+
   return (
     <aside className={styles.control_panel_wrapper}>
       <input
@@ -49,6 +66,9 @@ const ControlPanel = ({
       />
       <div>Calendar days to be selected: {daysHovered.calendar}</div>
       <div>Bussiness days to be selected: {daysHovered.bussiness}</div>
+
+      {savedTrips.map((savedTrip) => JSON.stringify(savedTrip))}
+
       <div className={styles.trip_input_wrapper}>
         <input
           type="text"
@@ -80,6 +100,13 @@ const ControlPanel = ({
           ) : null}
         </div>
         <input type="text" disabled value={selectedRangeString()} />
+        <button
+          type="button"
+          disabled={!isRangeSelected(tripRange) || !tripName}
+          onClick={handleTripSave}
+        >
+          save trip
+        </button>
       </div>
     </aside>
   );

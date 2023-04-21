@@ -4,14 +4,14 @@ import "react-day-picker/dist/style.css";
 import styles from "./Calendar.module.css";
 import isSameDay from "date-fns/isSameDay";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
-import { DaysHoveredType } from "../../App";
+import { DaysHoveredType, SavedTripType } from "../../App";
 import { HolidayType } from "../../types/HolidayType";
 import isBefore from "date-fns/isBefore";
 import {
   differenceInBusinessDays,
   isWeekendOrHoliday,
 } from "../../utils/dateFunctions";
-import addDays from "date-fns/addDays";
+import isWithinInterval from "date-fns/isWithinInterval";
 
 interface CalendarProps {
   tripRange: DateRange | undefined;
@@ -19,6 +19,7 @@ interface CalendarProps {
   setDaysHovered: ({ calendar, bussiness }: DaysHoveredType) => void;
   holidays: HolidayType[] | null;
   tripColor: string;
+  savedTrips: SavedTripType[];
 }
 
 const Calendar = ({
@@ -27,6 +28,7 @@ const Calendar = ({
   setDaysHovered,
   holidays,
   tripColor,
+  savedTrips,
 }: CalendarProps) => {
   const handleDayMouseEnter = (date: Date) => {
     if (!tripRange?.from || tripRange.to) return;
@@ -70,6 +72,7 @@ const Calendar = ({
       const isEndDay = tripRange?.to ? isSameDay(date, tripRange.to) : false;
       return isStartDay || isEndDay;
     },
+    ...getSavedTripsModifiers(savedTrips),
   };
 
   const modifiersClassNames = {
@@ -77,8 +80,9 @@ const Calendar = ({
   };
 
   const rangesStyles = {
-    startEndRangeDays: getStartEndRangeDaysStyles(tripColor),
-    betweenRangeDays: getBetweenRangeDaysStyles(tripColor),
+    startEndRangeDays: getMainRangeStyles(tripColor),
+    betweenRangeDays: getSecondaryRangeStyles(tripColor),
+    ...getSavedTripsStyles(savedTrips),
   };
 
   return (
@@ -95,10 +99,7 @@ const Calendar = ({
           months: styles.calendar_months,
         }}
         modifiers={modifiers}
-        modifiersStyles={{
-          startEndRangeDays: rangesStyles.startEndRangeDays,
-          betweenRangeDays: rangesStyles.betweenRangeDays,
-        }}
+        modifiersStyles={rangesStyles}
         modifiersClassNames={modifiersClassNames}
         onDayClick={handleDayClick}
       />
@@ -108,14 +109,14 @@ const Calendar = ({
 
 export default Calendar;
 
-const getStartEndRangeDaysStyles = (color: string) => ({
+const getMainRangeStyles = (color: string, betweenStyles: boolean = false) => ({
   backgroundColor: color,
   "&:hover": {
     backgroundColor: color,
   },
 });
 
-const getBetweenRangeDaysStyles = (
+const getSecondaryRangeStyles = (
   color: string,
   colorOpacity: string = "5f"
 ) => {
@@ -127,4 +128,32 @@ const getBetweenRangeDaysStyles = (
       backgroundColor: color + colorOpacity,
     },
   };
+};
+
+const getSavedTripsModifiers = (savedTrips: SavedTripType[]) => {
+  const savedTripsModifiers = new Map();
+
+  savedTrips.forEach((savedTrip) => {
+    savedTripsModifiers.set(savedTrip.name, (date: Date) =>
+      isWithinInterval(date, {
+        start: savedTrip.range.from,
+        end: savedTrip.range.to,
+      })
+    );
+  });
+
+  return Object.fromEntries(savedTripsModifiers);
+};
+
+const getSavedTripsStyles = (savedTrips: SavedTripType[]) => {
+  const savedTripsModifiersStyles = new Map();
+
+  savedTrips.forEach((savedTrip) => {
+    savedTripsModifiersStyles.set(
+      savedTrip.name,
+      getMainRangeStyles(savedTrip.color)
+    );
+  });
+
+  return Object.fromEntries(savedTripsModifiersStyles);
 };
