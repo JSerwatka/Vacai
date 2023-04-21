@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { DaysHoveredType } from "../../App";
 
-interface ControlPanelProps {}
+interface ControlPanelProps {
+  daysHovered: DaysHoveredType;
+}
 
-const ControlPanel = ({}: ControlPanelProps) => {
+const ControlPanel = ({ daysHovered }: ControlPanelProps) => {
   const [vacationDays, setVacationDays] = useState<number>(0);
 
   return (
@@ -19,6 +22,8 @@ const ControlPanel = ({}: ControlPanelProps) => {
         value={vacationDays}
         onChange={(e) => setVacationDays(Number(e.target.value))}
       />
+      <div>Calendar days to be selected: {daysHovered.calendar}</div>
+      <div>Bussiness days to be selected: {daysHovered.bussiness}</div>
     </div>
   );
 };

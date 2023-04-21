@@ -13,6 +13,11 @@ interface SavedVacationsType {
   range: Required<DateRange>;
 }
 
+export interface DaysHoveredType {
+  calendar: number;
+  bussiness: number;
+}
+
 function App() {
   const { holidays, error } = usePublicHolidays({
     year: 2023,
@@ -21,6 +26,10 @@ function App() {
 
   const [selectedRange, setSelectedRange] = useState<DateRange>();
   const [savedHolidays, setSavedHolidays] = useState<SavedVacationsType[]>();
+  const [daysHovered, setDaysHovered] = useState<DaysHoveredType>({
+    calendar: 0,
+    bussiness: 0,
+  });
 
   return (
     <div
@@ -28,8 +37,8 @@ function App() {
         display: "flex",
       }}
     >
-      <Calendar />
-      <ControlPanel />
+      <Calendar setDaysHovered={setDaysHovered} />
+      <ControlPanel daysHovered={daysHovered} />
     </div>
   );
 }

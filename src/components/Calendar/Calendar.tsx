@@ -6,21 +6,46 @@ import isWeekend from "date-fns/isWeekend";
 import isWithinInterval from "date-fns/isWithinInterval";
 import isSameDay from "date-fns/isSameDay";
 import { isBefore } from "date-fns";
+import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
+import differenceInBusinessDays from "date-fns/differenceInBusinessDays";
+import addDays from "date-fns/addDays";
+import { DaysHoveredType } from "../../App";
 
-const Calendar = () => {
+interface CalendarProps {
+  setDaysHovered: ({ calendar, bussiness }: DaysHoveredType) => void;
+}
+
+const Calendar = ({ setDaysHovered }: CalendarProps) => {
   const [range, setRange] = useState<DateRange | undefined>(undefined);
+
   // const [highlightedRange, setHighlightedRange] = useState<
   //   { start: Date; end: Date } | undefined
   // >(undefined);
 
-  // const handleDayMouseEnter = (date: Date) => {
-  //   if (!range?.from || range.to) return;
-  //   const newRange = { start: range.from, end: date };
-  //   setHighlightedRange(newRange);
-  // };
+  const handleDayMouseEnter = (date: Date) => {
+    if (!range?.from || range.to) return;
+
+    if (isBefore(date, range.from)) {
+      setDaysHovered({
+        calendar: 0,
+        bussiness: 0,
+      });
+    }
+
+    // TODO move to a function
+    const includingEndDate = addDays(date, 1);
+
+    setDaysHovered({
+      calendar: differenceInCalendarDays(includingEndDate, range.from),
+      bussiness: differenceInBusinessDays(includingEndDate, range.from),
+    });
+  };
 
   const handleDayClick = (day: Date) => {
-    if (!range?.from || range.to || isBefore(day, range?.from)) {
+    const startNewRange =
+      !range?.from || range.to || isBefore(day, range?.from);
+
+    if (startNewRange) {
       setRange({ from: day, to: undefined });
     } else {
       setRange({ ...range, to: day });
@@ -64,7 +89,7 @@ const Calendar = () => {
         selected={range}
         weekStartsOn={1}
         // onSelect={setRange}
-        // onDayMouseEnter={handleDayMouseEnter}
+        onDayMouseEnter={handleDayMouseEnter}
         styles={{
           months: {
             flexWrap: "wrap",
