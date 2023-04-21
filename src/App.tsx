@@ -24,9 +24,7 @@ function App() {
     countryCode: "PL",
   });
 
-  const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(
-    undefined
-  );
+  const [tripRange, setTripRange] = useState<DateRange | undefined>(undefined);
 
   const [daysHovered, setDaysHovered] = useState<DaysHoveredType>({
     calendar: 0,
@@ -42,10 +40,10 @@ function App() {
       <Calendar
         setDaysHovered={setDaysHovered}
         holidays={holidays}
-        selectedRange={selectedRange}
-        setSelectedRange={setSelectedRange}
+        tripRange={tripRange}
+        setTripRange={setTripRange}
       />
-      <ControlPanel daysHovered={daysHovered} selectedRange={selectedRange} />
+      <ControlPanel daysHovered={daysHovered} tripRange={tripRange} />
     </div>
   );
 }

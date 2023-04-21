@@ -7,28 +7,28 @@ import styles from "./ControlPanel.module.css";
 
 interface ControlPanelProps {
   daysHovered: DaysHoveredType;
-  selectedRange: DateRange | undefined;
+  tripRange: DateRange | undefined;
 }
 
 const dateFormat = "d MMM y";
 
-const ControlPanel = ({ daysHovered, selectedRange }: ControlPanelProps) => {
+const ControlPanel = ({ daysHovered, tripRange }: ControlPanelProps) => {
   const [vacationDays, setVacationDays] = useState<number>(0);
   const [tripName, setTripName] = useState<string>("");
   const [tripColor, setTripColor] = useState<string>("");
   const [colorModalOpened, setColorModalOpened] = useState<boolean>();
 
   const isRangeSelected = (
-    selectedRange: DateRange | undefined
-  ): selectedRange is { from: Date; to: Date } =>
-    !!selectedRange?.from && !!selectedRange?.to;
+    tripRange: DateRange | undefined
+  ): tripRange is { from: Date; to: Date } =>
+    !!tripRange?.from && !!tripRange?.to;
 
   const selectedRangeString = (): string => {
-    if (!isRangeSelected(selectedRange)) {
+    if (!isRangeSelected(tripRange)) {
       return "";
     }
-    return `${format(selectedRange.from, dateFormat)} - ${format(
-      selectedRange.to,
+    return `${format(tripRange.from, dateFormat)} - ${format(
+      tripRange.to,
       dateFormat
     )}`;
   };

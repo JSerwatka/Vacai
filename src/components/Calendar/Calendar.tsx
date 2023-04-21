@@ -13,22 +13,22 @@ import {
 } from "../../utils/dateFunctions";
 
 interface CalendarProps {
-  selectedRange: DateRange | undefined;
-  setSelectedRange: (dateRange: DateRange) => void;
+  tripRange: DateRange | undefined;
+  setTripRange: (dateRange: DateRange) => void;
   setDaysHovered: ({ calendar, bussiness }: DaysHoveredType) => void;
   holidays: HolidayType[] | null;
 }
 
 const Calendar = ({
-  selectedRange,
-  setSelectedRange,
+  tripRange,
+  setTripRange,
   setDaysHovered,
   holidays,
 }: CalendarProps) => {
   const handleDayMouseEnter = (date: Date) => {
-    if (!selectedRange?.from || selectedRange.to) return;
+    if (!tripRange?.from || tripRange.to) return;
 
-    if (isBefore(date, selectedRange.from)) {
+    if (isBefore(date, tripRange.from)) {
       setDaysHovered({
         calendar: 0,
         bussiness: 0,
@@ -37,35 +37,33 @@ const Calendar = ({
     }
 
     setDaysHovered({
-      calendar: differenceInCalendarDays(date, selectedRange.from) + 1,
-      bussiness: differenceInBusinessDays(date, selectedRange.from, holidays),
+      calendar: differenceInCalendarDays(date, tripRange.from) + 1,
+      bussiness: differenceInBusinessDays(date, tripRange.from, holidays),
     });
   };
 
   const handleDayClick = (day: Date) => {
     const startNewRange =
-      !selectedRange?.from ||
-      selectedRange.to ||
-      isBefore(day, selectedRange?.from);
+      !tripRange?.from || tripRange.to || isBefore(day, tripRange?.from);
 
     if (startNewRange) {
-      setSelectedRange({ from: day, to: undefined });
+      setTripRange({ from: day, to: undefined });
     } else {
-      setSelectedRange({ ...selectedRange, to: day });
+      setTripRange({ ...tripRange, to: day });
     }
   };
 
   const modifiers = {
     weekendDays: (date: Date) => isWeekendOrHoliday(date, holidays),
     betweenDates: (date: Date) => {
-      return selectedRange?.from && selectedRange?.to
-        ? date > selectedRange.from && date < selectedRange.to
+      return tripRange?.from && tripRange?.to
+        ? date > tripRange.from && date < tripRange.to
         : false;
     },
     startRange: (date: Date) =>
-      selectedRange?.from ? isSameDay(date, selectedRange.from) : false,
+      tripRange?.from ? isSameDay(date, tripRange.from) : false,
     endRange: (date: Date) =>
-      selectedRange?.to ? isSameDay(date, selectedRange.to) : false,
+      tripRange?.to ? isSameDay(date, tripRange.to) : false,
   };
 
   const modifiersStyles = {
@@ -87,7 +85,7 @@ const Calendar = ({
         disableNavigation
         defaultMonth={new Date(2023, 0)} // TODO use relative years
         numberOfMonths={12}
-        selected={selectedRange}
+        selected={tripRange}
         weekStartsOn={1}
         onDayMouseEnter={handleDayMouseEnter}
         styles={{
