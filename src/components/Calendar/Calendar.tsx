@@ -63,10 +63,13 @@ const Calendar = ({
         ? date > tripRange.from && date < tripRange.to
         : false;
     },
-    startRange: (date: Date) =>
-      tripRange?.from ? isSameDay(date, tripRange.from) : false,
-    endRange: (date: Date) =>
-      tripRange?.to ? isSameDay(date, tripRange.to) : false,
+    startEndRangeDates: (date: Date) => {
+      const isStartDay = tripRange?.from
+        ? isSameDay(date, tripRange.from)
+        : false;
+      const isEndDay = tripRange?.to ? isSameDay(date, tripRange.to) : false;
+      return isStartDay || isEndDay;
+    },
   };
 
   const modifiersClassNames = {
@@ -74,7 +77,7 @@ const Calendar = ({
   };
 
   const rangesStyles = {
-    startEndRange: {
+    startEndRangeDates: {
       backgroundColor: tripColor,
       "&:hover": {
         backgroundColor: tripColor,
@@ -105,8 +108,7 @@ const Calendar = ({
         }}
         modifiers={modifiers}
         modifiersStyles={{
-          startRange: rangesStyles.startEndRange,
-          endRange: rangesStyles.startEndRange,
+          startEndRangeDates: rangesStyles.startEndRangeDates,
           betweenRangeDates: rangesStyles.betweenRangeDates,
         }}
         modifiersClassNames={modifiersClassNames}
