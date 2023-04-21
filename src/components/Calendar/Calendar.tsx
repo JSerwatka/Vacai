@@ -58,12 +58,12 @@ const Calendar = ({
 
   const modifiers = {
     weekendDays: (date: Date) => isWeekendOrHoliday(date, holidays),
-    betweenRangeDates: (date: Date) => {
+    betweenRangeDays: (date: Date) => {
       return tripRange?.from && tripRange?.to
         ? date > tripRange.from && date < tripRange.to
         : false;
     },
-    startEndRangeDates: (date: Date) => {
+    startEndRangeDays: (date: Date) => {
       const isStartDay = tripRange?.from
         ? isSameDay(date, tripRange.from)
         : false;
@@ -77,20 +77,8 @@ const Calendar = ({
   };
 
   const rangesStyles = {
-    startEndRangeDates: {
-      backgroundColor: tripColor,
-      "&:hover": {
-        backgroundColor: tripColor,
-      },
-    },
-    betweenRangeDates: {
-      color: tripColor,
-      backgroundColor: tripColor + "5F",
-      "&:hover": {
-        color: tripColor,
-        backgroundColor: tripColor + "5F",
-      },
-    },
+    startEndRangeDays: getStartEndRangeDaysStyles(tripColor),
+    betweenRangeDays: getBetweenRangeDaysStyles(tripColor),
   };
 
   return (
@@ -108,8 +96,8 @@ const Calendar = ({
         }}
         modifiers={modifiers}
         modifiersStyles={{
-          startEndRangeDates: rangesStyles.startEndRangeDates,
-          betweenRangeDates: rangesStyles.betweenRangeDates,
+          startEndRangeDays: rangesStyles.startEndRangeDays,
+          betweenRangeDays: rangesStyles.betweenRangeDays,
         }}
         modifiersClassNames={modifiersClassNames}
         onDayClick={handleDayClick}
@@ -119,3 +107,24 @@ const Calendar = ({
 };
 
 export default Calendar;
+
+const getStartEndRangeDaysStyles = (color: string) => ({
+  backgroundColor: color,
+  "&:hover": {
+    backgroundColor: color,
+  },
+});
+
+const getBetweenRangeDaysStyles = (
+  color: string,
+  colorOpacity: string = "5f"
+) => {
+  return {
+    color: color,
+    backgroundColor: color + colorOpacity,
+    "&:hover": {
+      color: color,
+      backgroundColor: color + colorOpacity,
+    },
+  };
+};
