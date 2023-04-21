@@ -4,7 +4,7 @@ import "react-day-picker/dist/style.css";
 import styles from "./Calendar.module.css";
 import isSameDay from "date-fns/isSameDay";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
-import { DaysHoveredType, SavedTripType } from "../../App";
+import { DateRangeRequired, DaysHoveredType, SavedTripType } from "../../App";
 import { HolidayType } from "../../types/HolidayType";
 import isBefore from "date-fns/isBefore";
 import {
@@ -12,6 +12,8 @@ import {
   isWeekendOrHoliday,
 } from "../../utils/dateFunctions";
 import isWithinInterval from "date-fns/isWithinInterval";
+import { Interval } from "date-fns";
+import { isRangeSelected } from "../../utils/rangeSelectedTypeGuard";
 
 interface CalendarProps {
   tripRange: DateRange | undefined;
@@ -61,15 +63,16 @@ const Calendar = ({
   const modifiers = {
     weekendDays: (date: Date) => isWeekendOrHoliday(date, holidays),
     betweenRangeDays: (date: Date) => {
-      return tripRange?.from && tripRange?.to
-        ? date > tripRange.from && date < tripRange.to
-        : false;
+      if (isRangeSelected(tripRange)) {
+        return isRangeMiddle(date, tripRange);
+      }
+      return false;
     },
     startEndRangeDays: (date: Date) => {
       const isStartDay = tripRange?.from
-        ? isSameDay(date, tripRange.from)
+        ? isRangeStart(date, tripRange.from)
         : false;
-      const isEndDay = tripRange?.to ? isSameDay(date, tripRange.to) : false;
+      const isEndDay = tripRange?.to ? isRangeEnd(date, tripRange.to) : false;
       return isStartDay || isEndDay;
     },
     ...getSavedTripsModifiers(savedTrips),
@@ -109,12 +112,31 @@ const Calendar = ({
 
 export default Calendar;
 
-const getMainRangeStyles = (color: string, betweenStyles: boolean = false) => ({
-  backgroundColor: color,
-  "&:hover": {
+const getMainRangeStyles = (
+  color: string,
+  position?: "start" | "end" | "middle"
+) => {
+  const getBorderRadius = () => {
+    switch (position) {
+      case "start":
+        return "100% 0 0 100%";
+      case "end":
+        return "0 100% 100% 0";
+      case "middle":
+        return "0";
+      default:
+        return null;
+    }
+  };
+
+  return {
     backgroundColor: color,
-  },
-});
+    "&:hover": {
+      backgroundColor: color,
+    },
+    borderRadius: getBorderRadius(),
+  };
+};
 
 const getSecondaryRangeStyles = (
   color: string,
@@ -130,15 +152,30 @@ const getSecondaryRangeStyles = (
   };
 };
 
+const isRangeStart = (date: Date, fromDate: DateRangeRequired["from"]) => {
+  return isSameDay(date, fromDate);
+};
+
+const isRangeEnd = (date: Date, toDate: DateRangeRequired["to"]) => {
+  return isSameDay(date, toDate);
+};
+
+const isRangeMiddle = (date: Date, range: DateRangeRequired) => {
+  return date > range.from && date < range.to;
+};
+
 const getSavedTripsModifiers = (savedTrips: SavedTripType[]) => {
   const savedTripsModifiers = new Map();
 
   savedTrips.forEach((savedTrip) => {
-    savedTripsModifiers.set(savedTrip.name, (date: Date) =>
-      isWithinInterval(date, {
-        start: savedTrip.range.from,
-        end: savedTrip.range.to,
-      })
+    savedTripsModifiers.set(savedTrip.name + "_start", (date: Date) =>
+      isRangeStart(date, savedTrip.range.from)
+    );
+    savedTripsModifiers.set(savedTrip.name + "_end", (date: Date) =>
+      isRangeEnd(date, savedTrip.range.to)
+    );
+    savedTripsModifiers.set(savedTrip.name + "_middle", (date: Date) =>
+      isRangeMiddle(date, savedTrip.range)
     );
   });
 
@@ -150,8 +187,16 @@ const getSavedTripsStyles = (savedTrips: SavedTripType[]) => {
 
   savedTrips.forEach((savedTrip) => {
     savedTripsModifiersStyles.set(
-      savedTrip.name,
-      getMainRangeStyles(savedTrip.color)
+      savedTrip.name + "_start",
+      getMainRangeStyles(savedTrip.color, "start")
+    );
+    savedTripsModifiersStyles.set(
+      savedTrip.name + "_end",
+      getMainRangeStyles(savedTrip.color, "end")
+    );
+    savedTripsModifiersStyles.set(
+      savedTrip.name + "_middle",
+      getMainRangeStyles(savedTrip.color, "middle")
     );
   });
 

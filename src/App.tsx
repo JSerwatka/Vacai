@@ -8,10 +8,12 @@ import { HolidayType } from "./types/HolidayType";
 import { DateRange } from "react-day-picker";
 import { DeepRequired } from "./types/DeepRequired";
 
+export type DateRangeRequired = DeepRequired<DateRange>;
+
 export interface SavedTripType {
   color: string;
   name: string;
-  range: DeepRequired<DateRange>;
+  range: DateRangeRequired;
 }
 
 export interface DaysHoveredType {

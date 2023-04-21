@@ -4,6 +4,7 @@ import { DateRange } from "react-day-picker";
 import format from "date-fns/format";
 import { CirclePicker, ColorResult } from "react-color";
 import styles from "./ControlPanel.module.css";
+import { isRangeSelected } from "../../utils/rangeSelectedTypeGuard";
 
 interface ControlPanelProps {
   daysHovered: DaysHoveredType;
@@ -27,11 +28,6 @@ const ControlPanel = ({
   const [vacationDays, setVacationDays] = useState<number>(0);
   const [tripName, setTripName] = useState<string>("");
   const [colorModalOpened, setColorModalOpened] = useState<boolean>();
-
-  const isRangeSelected = (
-    tripRange: DateRange | undefined
-  ): tripRange is { from: Date; to: Date } =>
-    !!tripRange?.from && !!tripRange?.to;
 
   const selectedRangeString = (): string => {
     if (!isRangeSelected(tripRange)) {
@@ -66,8 +62,23 @@ const ControlPanel = ({
       />
       <div>Calendar days to be selected: {daysHovered.calendar}</div>
       <div>Bussiness days to be selected: {daysHovered.bussiness}</div>
+      <h1>Trips:</h1>
 
-      {savedTrips.map((savedTrip) => JSON.stringify(savedTrip))}
+      {savedTrips.map((savedTrip) => (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+          }}
+        >
+          <div>{savedTrip.name}</div>
+          <div>{savedTrip.color}</div>
+          <div>
+            {format(savedTrip.range.from, dateFormat)} -{" "}
+            {format(savedTrip.range.to, dateFormat)}
+          </div>
+        </div>
+      ))}
 
       <div className={styles.trip_input_wrapper}>
         <input
