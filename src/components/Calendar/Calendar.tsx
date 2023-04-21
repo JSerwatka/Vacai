@@ -17,6 +17,7 @@ interface CalendarProps {
   setTripRange: (dateRange: DateRange) => void;
   setDaysHovered: ({ calendar, bussiness }: DaysHoveredType) => void;
   holidays: HolidayType[] | null;
+  tripColor: string;
 }
 
 const Calendar = ({
@@ -24,6 +25,7 @@ const Calendar = ({
   setTripRange,
   setDaysHovered,
   holidays,
+  tripColor,
 }: CalendarProps) => {
   const handleDayMouseEnter = (date: Date) => {
     if (!tripRange?.from || tripRange.to) return;
@@ -74,12 +76,7 @@ const Calendar = ({
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "700px",
-        border: "1px solid black",
-      }}
-    >
+    <div className={styles.calendar_wrapper}>
       <DayPicker
         mode="range"
         disableNavigation
@@ -88,12 +85,8 @@ const Calendar = ({
         selected={tripRange}
         weekStartsOn={1}
         onDayMouseEnter={handleDayMouseEnter}
-        styles={{
-          months: {
-            flexWrap: "wrap",
-            justifyContent: "center",
-            rowGap: "30px",
-          },
+        classNames={{
+          months: styles.calendar_months,
         }}
         modifiers={modifiers}
         modifiersClassNames={modifiersStyles}

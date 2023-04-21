@@ -25,6 +25,7 @@ function App() {
   });
 
   const [tripRange, setTripRange] = useState<DateRange | undefined>(undefined);
+  const [tripColor, setTripColor] = useState<string>("#4caf50");
 
   const [daysHovered, setDaysHovered] = useState<DaysHoveredType>({
     calendar: 0,
@@ -42,8 +43,14 @@ function App() {
         holidays={holidays}
         tripRange={tripRange}
         setTripRange={setTripRange}
+        tripColor={tripColor}
       />
-      <ControlPanel daysHovered={daysHovered} tripRange={tripRange} />
+      <ControlPanel
+        daysHovered={daysHovered}
+        tripRange={tripRange}
+        tripColor={tripColor}
+        setTripColor={setTripColor}
+      />
     </div>
   );
 }
