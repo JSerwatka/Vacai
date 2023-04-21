@@ -37,7 +37,7 @@ function App() {
         display: "flex",
       }}
     >
-      <Calendar setDaysHovered={setDaysHovered} />
+      <Calendar setDaysHovered={setDaysHovered} holidays={holidays} />
       <ControlPanel daysHovered={daysHovered} />
     </div>
   );

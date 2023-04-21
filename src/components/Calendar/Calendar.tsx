@@ -3,24 +3,38 @@ import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import styles from "./Calendar.module.css"; // Import your CSS file for the calendar
 import isWeekend from "date-fns/isWeekend";
-import isWithinInterval from "date-fns/isWithinInterval";
 import isSameDay from "date-fns/isSameDay";
-import { isBefore } from "date-fns";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
-import differenceInBusinessDays from "date-fns/differenceInBusinessDays";
-import addDays from "date-fns/addDays";
 import { DaysHoveredType } from "../../App";
+import { HolidayType } from "../../types/HolidayType";
+import isBefore from "date-fns/isBefore";
+import eachDayOfInterval from "date-fns/eachDayOfInterval";
 
 interface CalendarProps {
   setDaysHovered: ({ calendar, bussiness }: DaysHoveredType) => void;
+  holidays: HolidayType[] | null;
 }
 
-const Calendar = ({ setDaysHovered }: CalendarProps) => {
+const Calendar = ({ setDaysHovered, holidays }: CalendarProps) => {
   const [range, setRange] = useState<DateRange | undefined>(undefined);
-
   // const [highlightedRange, setHighlightedRange] = useState<
   //   { start: Date; end: Date } | undefined
   // >(undefined);
+
+  const isWeekendOrHoliday = (date: Date) => {
+    const isWeekendDay = isWeekend(date);
+
+    const isHoliday = holidays?.some((holiday) =>
+      isSameDay(holiday.date, date)
+    );
+    return isWeekendDay || isHoliday;
+  };
+
+  const differenceInBusinessDays = (endDate: Date, startDate: Date) => {
+    return eachDayOfInterval({ start: startDate, end: endDate }).filter(
+      (day) => !isWeekendOrHoliday(day)
+    ).length;
+  };
 
   const handleDayMouseEnter = (date: Date) => {
     if (!range?.from || range.to) return;
@@ -30,14 +44,12 @@ const Calendar = ({ setDaysHovered }: CalendarProps) => {
         calendar: 0,
         bussiness: 0,
       });
+      return;
     }
 
-    // TODO move to a function
-    const includingEndDate = addDays(date, 1);
-
     setDaysHovered({
-      calendar: differenceInCalendarDays(includingEndDate, range.from),
-      bussiness: differenceInBusinessDays(includingEndDate, range.from),
+      calendar: differenceInCalendarDays(date, range.from) + 1,
+      bussiness: differenceInBusinessDays(date, range.from),
     });
   };
 
@@ -53,7 +65,7 @@ const Calendar = ({ setDaysHovered }: CalendarProps) => {
   };
 
   const modifiers = {
-    weekendDays: (date: Date) => isWeekend(date),
+    weekendDays: isWeekendOrHoliday,
     betweenDates: (date: Date) => {
       return range?.from && range?.to
         ? date > range.from && date < range.to
@@ -88,7 +100,6 @@ const Calendar = ({ setDaysHovered }: CalendarProps) => {
         numberOfMonths={12}
         selected={range}
         weekStartsOn={1}
-        // onSelect={setRange}
         onDayMouseEnter={handleDayMouseEnter}
         styles={{
           months: {
