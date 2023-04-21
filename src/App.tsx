@@ -10,15 +10,19 @@ import { DeepRequired } from "./types/DeepRequired";
 
 export type DateRangeRequired = DeepRequired<DateRange>;
 
-export interface SavedVacationType {
-  color: string;
-  name: string;
-  range: DateRangeRequired;
-}
+export type SavedVacationType = DeepRequired<SelectedVacationType>;
 
 export interface DaysHoveredType {
   calendar: number;
   bussiness: number;
+}
+
+export interface SelectedVacationType {
+  range: DateRange;
+  bussinessDays: number;
+  calendarDays: number;
+  color: string;
+  name: string;
 }
 
 function App() {
@@ -27,10 +31,17 @@ function App() {
     countryCode: "PL",
   });
 
-  const [vacationSelected, setVacationSelected] = useState<
-    DateRange | undefined
-  >(undefined);
-  const [vacationColor, setVacationColor] = useState<string>("#4caf50");
+  const [vacationSelected, setVacationSelected] =
+    useState<SelectedVacationType>({
+      range: {
+        from: undefined,
+        to: undefined,
+      },
+      bussinessDays: 0,
+      calendarDays: 0,
+      color: "#4caf50",
+      name: "",
+    });
 
   const [daysHovered, setDaysHovered] = useState<DaysHoveredType>({
     calendar: 0,
@@ -57,14 +68,11 @@ function App() {
         holidays={holidays}
         vacationSelected={vacationSelected}
         setVacationSelected={setVacationSelected}
-        vacationColor={vacationColor}
         savedVacations={savedVacations}
       />
       <ControlPanel
-        daysHovered={daysHovered}
         vacationSelected={vacationSelected}
-        vacationColor={vacationColor}
-        setVacationColor={setVacationColor}
+        setVacationSelected={setVacationSelected}
         savedVacations={savedVacations}
         addSavedVacation={addSavedVacation}
       />

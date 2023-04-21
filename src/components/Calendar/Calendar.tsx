@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import styles from "./Calendar.module.css";
@@ -8,6 +8,7 @@ import {
   DateRangeRequired,
   DaysHoveredType,
   SavedVacationType,
+  SelectedVacationType,
 } from "../../App";
 import { HolidayType } from "../../types/HolidayType";
 import isBefore from "date-fns/isBefore";
@@ -20,70 +21,84 @@ import { Interval } from "date-fns";
 import { isRangeSelected } from "../../utils/rangeSelectedTypeGuard";
 
 interface CalendarProps {
-  vacationSelected: DateRange | undefined;
-  setVacationSelected: (dateRange: DateRange) => void;
+  vacationSelected: SelectedVacationType;
+  setVacationSelected: Dispatch<SetStateAction<SelectedVacationType>>;
   setDaysHovered: ({ calendar, bussiness }: DaysHoveredType) => void;
   holidays: HolidayType[] | null;
-  vacationColor: string;
   savedVacations: SavedVacationType[];
 }
 
 const Calendar = ({
   vacationSelected,
   setVacationSelected,
-  setDaysHovered,
   holidays,
-  vacationColor,
   savedVacations,
 }: CalendarProps) => {
-  const handleDayMouseEnter = (date: Date) => {
-    if (!vacationSelected?.from || vacationSelected.to) return;
+  // const handleDayMouseEnter = (date: Date) => {
+  //   if (!vacationSelected?.from || vacationSelected.to) return;
 
-    if (isBefore(date, vacationSelected.from)) {
-      setDaysHovered({
-        calendar: 0,
-        bussiness: 0,
-      });
-      return;
-    }
+  //   if (isBefore(date, vacationSelected.from)) {
+  //     setDaysHovered({
+  //       calendar: 0,
+  //       bussiness: 0,
+  //     });
+  //     return;
+  //   }
 
-    setDaysHovered({
-      calendar: differenceInCalendarDays(date, vacationSelected.from) + 1,
-      bussiness: differenceInBusinessDays(
-        date,
-        vacationSelected.from,
-        holidays
-      ),
-    });
-  };
+  //   setDaysHovered({
+  //     calendar: differenceInCalendarDays(date, vacationSelected.from) + 1,
+  //     bussiness: differenceInBusinessDays(
+  //       date,
+  //       vacationSelected.from,
+  //       holidays
+  //     ),
+  //   });
+  // };
 
   const handleDayClick = (day: Date) => {
     const startNewRange =
-      !vacationSelected?.from ||
-      vacationSelected.to ||
-      isBefore(day, vacationSelected?.from);
+      !vacationSelected?.range.from ||
+      vacationSelected.range.to ||
+      isBefore(day, vacationSelected?.range.from);
 
     if (startNewRange) {
-      setVacationSelected({ from: day, to: undefined });
-    } else {
-      setVacationSelected({ ...vacationSelected, to: day });
+      setVacationSelected((prevState) => ({
+        ...prevState,
+        range: {
+          from: day,
+          to: undefined,
+        },
+        calendarDays: 0,
+        bussinessDays: 0,
+      }));
+      return;
     }
+
+    setVacationSelected((prevState) => ({
+      ...prevState,
+      range: {
+        ...prevState.range,
+        to: day,
+      },
+      calendarDays: differenceInCalendarDays(day, prevState.range.from) + 1,
+      bussiness: differenceInBusinessDays(day, prevState.range.from, holidays),
+    }));
   };
 
   const modifiers = {
     weekendDays: (date: Date) => isWeekendOrHoliday(date, holidays),
     betweenRangeDays: (date: Date) => {
-      if (isRangeSelected(vacationSelected)) {
-        return isRangeMiddle(date, vacationSelected);
+      if (isRangeSelected(vacationSelected?.range)) {
+        return isRangeMiddle(date, vacationSelected.range);
       }
       return false;
     },
     startEndRangeDays: (date: Date) => {
-      const isStartDay = vacationSelected?.from
-        ? isRangeStart(date, vacationSelected.from)
+      const isStartDay = vacationSelected.range?.from
+        ? isRangeStart(date, vacationSelected.range.from)
         : false;
-      const isEndDay = vacationSelected?.to
-        ? isRangeEnd(date, vacationSelected.to)
+      const isEndDay = vacationSelected.range?.to
+        ? isRangeEnd(date, vacationSelected.range.to)
         : false;
       return isStartDay || isEndDay;
     },
@@ -95,8 +110,8 @@ const Calendar = ({
   };
 
   const rangesStyles = {
-    startEndRangeDays: getMainRangeStyles(vacationColor),
-    betweenRangeDays: getSecondaryRangeStyles(vacationColor),
+    startEndRangeDays: getMainRangeStyles(vacationSelected.color),
+    betweenRangeDays: getSecondaryRangeStyles(vacationSelected.color),
     ...getSavedTripsStyles(savedVacations),
   };
 
@@ -107,9 +122,8 @@ const Calendar = ({
         disableNavigation
         defaultMonth={new Date(2023, 0)} // TODO use relative years
         numberOfMonths={12}
-        selected={vacationSelected}
+        selected={vacationSelected.range}
         weekStartsOn={1}
-        onDayMouseEnter={handleDayMouseEnter}
         classNames={{
           months: styles.calendar_months,
         }}
