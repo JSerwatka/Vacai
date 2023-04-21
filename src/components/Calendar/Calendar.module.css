@@ -7,17 +7,6 @@
   background-color: rgb(106, 199, 230);
 }
 
-.betweenDates,
-.betweenDates:hover {
-  color: #0eca2d;
-  background-color: #cff4d5;
-}
-
-.startEndRange,
-.startEndRange:hover {
-  background-color: #0eca2d;
-}
-
 .calendar_wrapper {
   max-width: 700px;
   border: 1px solid black;

@@ -11,6 +11,7 @@ import {
   differenceInBusinessDays,
   isWeekendOrHoliday,
 } from "../../utils/dateFunctions";
+import addDays from "date-fns/addDays";
 
 interface CalendarProps {
   tripRange: DateRange | undefined;
@@ -57,7 +58,7 @@ const Calendar = ({
 
   const modifiers = {
     weekendDays: (date: Date) => isWeekendOrHoliday(date, holidays),
-    betweenDates: (date: Date) => {
+    betweenRangeDates: (date: Date) => {
       return tripRange?.from && tripRange?.to
         ? date > tripRange.from && date < tripRange.to
         : false;
@@ -68,11 +69,25 @@ const Calendar = ({
       tripRange?.to ? isSameDay(date, tripRange.to) : false,
   };
 
-  const modifiersStyles = {
+  const modifiersClassNames = {
     weekendDays: styles.weekendDays,
-    betweenDates: styles.betweenDates,
-    startRange: styles.startEndRange,
-    endRange: styles.startEndRange,
+  };
+
+  const rangesStyles = {
+    startEndRange: {
+      backgroundColor: tripColor,
+      "&:hover": {
+        backgroundColor: tripColor,
+      },
+    },
+    betweenRangeDates: {
+      color: tripColor,
+      backgroundColor: tripColor + "5F",
+      "&:hover": {
+        color: tripColor,
+        backgroundColor: tripColor + "5F",
+      },
+    },
   };
 
   return (
@@ -89,7 +104,12 @@ const Calendar = ({
           months: styles.calendar_months,
         }}
         modifiers={modifiers}
-        modifiersClassNames={modifiersStyles}
+        modifiersStyles={{
+          startRange: rangesStyles.startEndRange,
+          endRange: rangesStyles.startEndRange,
+          betweenRangeDates: rangesStyles.betweenRangeDates,
+        }}
+        modifiersClassNames={modifiersClassNames}
         onDayClick={handleDayClick}
       />
     </div>
