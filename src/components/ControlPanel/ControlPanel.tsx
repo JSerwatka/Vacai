@@ -2,6 +2,8 @@ import { useState } from "react";
 import { DaysHoveredType } from "../../App";
 import { DateRange } from "react-day-picker";
 import format from "date-fns/format";
+import { CirclePicker, ColorResult } from "react-color";
+import styles from "./ControlPanel.module.css";
 
 interface ControlPanelProps {
   daysHovered: DaysHoveredType;
@@ -13,6 +15,9 @@ const dateFormat = "d MMM y";
 const ControlPanel = ({ daysHovered, selectedRange }: ControlPanelProps) => {
   const [vacationDays, setVacationDays] = useState<number>(0);
   const [tripName, setTripName] = useState<string>("");
+  const [tripColor, setTripColor] = useState<string>("");
+  const [colorModalOpened, setColorModalOpened] = useState<boolean>();
+
   const isRangeSelected = (
     selectedRange: DateRange | undefined
   ): selectedRange is { from: Date; to: Date } =>
@@ -29,13 +34,7 @@ const ControlPanel = ({ daysHovered, selectedRange }: ControlPanelProps) => {
   };
 
   return (
-    <div
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <aside className={styles.control_panel_wrapper}>
       <input
         type="number"
         placeholder="Ilość dni urlopu"
@@ -44,21 +43,39 @@ const ControlPanel = ({ daysHovered, selectedRange }: ControlPanelProps) => {
       />
       <div>Calendar days to be selected: {daysHovered.calendar}</div>
       <div>Bussiness days to be selected: {daysHovered.bussiness}</div>
-      <div
-        style={{
-          display: "flex",
-        }}
-      >
+      <div className={styles.trip_input_wrapper}>
         <input
           type="text"
           placeholder="trip name"
           value={tripName}
           onChange={(e) => setTripName(e.target.value)}
         ></input>
-
+        <div className={styles.color_btn_wrapper}>
+          <button
+            type="button"
+            onClick={() => setColorModalOpened((prevValue) => !prevValue)}
+            style={{
+              backgroundColor: tripColor,
+            }}
+          >
+            select color
+          </button>
+          {colorModalOpened ? (
+            <div className={styles.color_picker_container}>
+              <CirclePicker
+                color={tripColor}
+                onChangeComplete={(color) => {
+                  setTripColor(color.hex);
+                  setColorModalOpened(false);
+                }}
+                circleSpacing={5}
+              />
+            </div>
+          ) : null}
+        </div>
         <input type="text" disabled value={selectedRangeString()} />
       </div>
-    </div>
+    </aside>
   );
 };
 

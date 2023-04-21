@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import styles from "./Calendar.module.css"; // Import your CSS file for the calendar
+import styles from "./Calendar.module.css";
 import isSameDay from "date-fns/isSameDay";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 import { DaysHoveredType } from "../../App";

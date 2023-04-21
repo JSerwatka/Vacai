@@ -1,0 +1,21 @@
+.control_panel_wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.trip_input_wrapper {
+  display: flex;
+}
+
+.color_btn_wrapper {
+  position: relative;
+}
+
+.color_picker_container {
+  position: absolute;
+  left: -20px;
+  border: 1px solid black;
+  width: 100px;
+  display: flex;
+}
