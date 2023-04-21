@@ -1,12 +1,32 @@
 import { useState } from "react";
 import { DaysHoveredType } from "../../App";
+import { DateRange } from "react-day-picker";
+import format from "date-fns/format";
 
 interface ControlPanelProps {
   daysHovered: DaysHoveredType;
+  selectedRange: DateRange | undefined;
 }
 
-const ControlPanel = ({ daysHovered }: ControlPanelProps) => {
+const dateFormat = "d MMM y";
+
+const ControlPanel = ({ daysHovered, selectedRange }: ControlPanelProps) => {
   const [vacationDays, setVacationDays] = useState<number>(0);
+  const [tripName, setTripName] = useState<string>("");
+  const isRangeSelected = (
+    selectedRange: DateRange | undefined
+  ): selectedRange is { from: Date; to: Date } =>
+    !!selectedRange?.from && !!selectedRange?.to;
+
+  const selectedRangeString = (): string => {
+    if (!isRangeSelected(selectedRange)) {
+      return "";
+    }
+    return `${format(selectedRange.from, dateFormat)} - ${format(
+      selectedRange.to,
+      dateFormat
+    )}`;
+  };
 
   return (
     <div
@@ -24,6 +44,20 @@ const ControlPanel = ({ daysHovered }: ControlPanelProps) => {
       />
       <div>Calendar days to be selected: {daysHovered.calendar}</div>
       <div>Bussiness days to be selected: {daysHovered.bussiness}</div>
+      <div
+        style={{
+          display: "flex",
+        }}
+      >
+        <input
+          type="text"
+          placeholder="trip name"
+          value={tripName}
+          onChange={(e) => setTripName(e.target.value)}
+        ></input>
+
+        <input type="text" disabled value={selectedRangeString()} />
+      </div>
     </div>
   );
 };

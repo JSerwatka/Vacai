@@ -24,8 +24,10 @@ function App() {
     countryCode: "PL",
   });
 
-  const [selectedRange, setSelectedRange] = useState<DateRange>();
-  const [savedHolidays, setSavedHolidays] = useState<SavedVacationsType[]>();
+  const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(
+    undefined
+  );
+
   const [daysHovered, setDaysHovered] = useState<DaysHoveredType>({
     calendar: 0,
     bussiness: 0,
@@ -37,8 +39,13 @@ function App() {
         display: "flex",
       }}
     >
-      <Calendar setDaysHovered={setDaysHovered} holidays={holidays} />
-      <ControlPanel daysHovered={daysHovered} />
+      <Calendar
+        setDaysHovered={setDaysHovered}
+        holidays={holidays}
+        selectedRange={selectedRange}
+        setSelectedRange={setSelectedRange}
+      />
+      <ControlPanel daysHovered={daysHovered} selectedRange={selectedRange} />
     </div>
   );
 }

@@ -13,17 +13,22 @@ import {
 } from "../../utils/dateFunctions";
 
 interface CalendarProps {
+  selectedRange: DateRange | undefined;
+  setSelectedRange: (dateRange: DateRange) => void;
   setDaysHovered: ({ calendar, bussiness }: DaysHoveredType) => void;
   holidays: HolidayType[] | null;
 }
 
-const Calendar = ({ setDaysHovered, holidays }: CalendarProps) => {
-  const [range, setRange] = useState<DateRange | undefined>(undefined);
-
+const Calendar = ({
+  selectedRange,
+  setSelectedRange,
+  setDaysHovered,
+  holidays,
+}: CalendarProps) => {
   const handleDayMouseEnter = (date: Date) => {
-    if (!range?.from || range.to) return;
+    if (!selectedRange?.from || selectedRange.to) return;
 
-    if (isBefore(date, range.from)) {
+    if (isBefore(date, selectedRange.from)) {
       setDaysHovered({
         calendar: 0,
         bussiness: 0,
@@ -32,32 +37,35 @@ const Calendar = ({ setDaysHovered, holidays }: CalendarProps) => {
     }
 
     setDaysHovered({
-      calendar: differenceInCalendarDays(date, range.from) + 1,
-      bussiness: differenceInBusinessDays(date, range.from, holidays),
+      calendar: differenceInCalendarDays(date, selectedRange.from) + 1,
+      bussiness: differenceInBusinessDays(date, selectedRange.from, holidays),
     });
   };
 
   const handleDayClick = (day: Date) => {
     const startNewRange =
-      !range?.from || range.to || isBefore(day, range?.from);
+      !selectedRange?.from ||
+      selectedRange.to ||
+      isBefore(day, selectedRange?.from);
 
     if (startNewRange) {
-      setRange({ from: day, to: undefined });
+      setSelectedRange({ from: day, to: undefined });
     } else {
-      setRange({ ...range, to: day });
+      setSelectedRange({ ...selectedRange, to: day });
     }
   };
 
   const modifiers = {
     weekendDays: (date: Date) => isWeekendOrHoliday(date, holidays),
     betweenDates: (date: Date) => {
-      return range?.from && range?.to
-        ? date > range.from && date < range.to
+      return selectedRange?.from && selectedRange?.to
+        ? date > selectedRange.from && date < selectedRange.to
         : false;
     },
     startRange: (date: Date) =>
-      range?.from ? isSameDay(date, range.from) : false,
-    endRange: (date: Date) => (range?.to ? isSameDay(date, range.to) : false),
+      selectedRange?.from ? isSameDay(date, selectedRange.from) : false,
+    endRange: (date: Date) =>
+      selectedRange?.to ? isSameDay(date, selectedRange.to) : false,
   };
 
   const modifiersStyles = {
@@ -79,7 +87,7 @@ const Calendar = ({ setDaysHovered, holidays }: CalendarProps) => {
         disableNavigation
         defaultMonth={new Date(2023, 0)} // TODO use relative years
         numberOfMonths={12}
-        selected={range}
+        selected={selectedRange}
         weekStartsOn={1}
         onDayMouseEnter={handleDayMouseEnter}
         styles={{
