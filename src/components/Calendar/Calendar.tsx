@@ -2,13 +2,15 @@ import { useState } from "react";
 import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import styles from "./Calendar.module.css"; // Import your CSS file for the calendar
-import isWeekend from "date-fns/isWeekend";
 import isSameDay from "date-fns/isSameDay";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 import { DaysHoveredType } from "../../App";
 import { HolidayType } from "../../types/HolidayType";
 import isBefore from "date-fns/isBefore";
-import eachDayOfInterval from "date-fns/eachDayOfInterval";
+import {
+  differenceInBusinessDays,
+  isWeekendOrHoliday,
+} from "../../utils/dateFunctions";
 
 interface CalendarProps {
   setDaysHovered: ({ calendar, bussiness }: DaysHoveredType) => void;
@@ -17,24 +19,6 @@ interface CalendarProps {
 
 const Calendar = ({ setDaysHovered, holidays }: CalendarProps) => {
   const [range, setRange] = useState<DateRange | undefined>(undefined);
-  // const [highlightedRange, setHighlightedRange] = useState<
-  //   { start: Date; end: Date } | undefined
-  // >(undefined);
-
-  const isWeekendOrHoliday = (date: Date) => {
-    const isWeekendDay = isWeekend(date);
-
-    const isHoliday = holidays?.some((holiday) =>
-      isSameDay(holiday.date, date)
-    );
-    return isWeekendDay || isHoliday;
-  };
-
-  const differenceInBusinessDays = (endDate: Date, startDate: Date) => {
-    return eachDayOfInterval({ start: startDate, end: endDate }).filter(
-      (day) => !isWeekendOrHoliday(day)
-    ).length;
-  };
 
   const handleDayMouseEnter = (date: Date) => {
     if (!range?.from || range.to) return;
@@ -49,7 +33,7 @@ const Calendar = ({ setDaysHovered, holidays }: CalendarProps) => {
 
     setDaysHovered({
       calendar: differenceInCalendarDays(date, range.from) + 1,
-      bussiness: differenceInBusinessDays(date, range.from),
+      bussiness: differenceInBusinessDays(date, range.from, holidays),
     });
   };
 
@@ -65,7 +49,7 @@ const Calendar = ({ setDaysHovered, holidays }: CalendarProps) => {
   };
 
   const modifiers = {
-    weekendDays: isWeekendOrHoliday,
+    weekendDays: (date: Date) => isWeekendOrHoliday(date, holidays),
     betweenDates: (date: Date) => {
       return range?.from && range?.to
         ? date > range.from && date < range.to
@@ -74,8 +58,6 @@ const Calendar = ({ setDaysHovered, holidays }: CalendarProps) => {
     startRange: (date: Date) =>
       range?.from ? isSameDay(date, range.from) : false,
     endRange: (date: Date) => (range?.to ? isSameDay(date, range.to) : false),
-    // highlighted: (date: Date) =>
-    //   highlightedRange && isWithinInterval(date, highlightedRange),
   };
 
   const modifiersStyles = {
@@ -83,7 +65,6 @@ const Calendar = ({ setDaysHovered, holidays }: CalendarProps) => {
     betweenDates: styles.betweenDates,
     startRange: styles.startEndRange,
     endRange: styles.startEndRange,
-    // highlighted: "highlighted",
   };
 
   return (
