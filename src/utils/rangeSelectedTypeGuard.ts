@@ -1,6 +1,8 @@
 import { DateRange } from "react-day-picker";
+import { SelectedVacationType } from "../App";
+import { DeepRequired } from "../types/DeepRequired";
 
 export const isRangeSelected = (
-  vacationSelected: DateRange | undefined
-): vacationSelected is { from: Date; to: Date } =>
-  !!vacationSelected?.from && !!vacationSelected?.to;
+  vacationSelected: SelectedVacationType
+): vacationSelected is DeepRequired<SelectedVacationType> =>
+  !!vacationSelected?.range.from && !!vacationSelected?.range.to;

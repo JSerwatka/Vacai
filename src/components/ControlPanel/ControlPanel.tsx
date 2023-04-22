@@ -6,7 +6,7 @@ import {
 } from "../../App";
 import { DateRange } from "react-day-picker";
 import format from "date-fns/format";
-import { CirclePicker, ColorResult } from "react-color";
+import { CirclePicker } from "react-color";
 import styles from "./ControlPanel.module.css";
 import { isRangeSelected } from "../../utils/rangeSelectedTypeGuard";
 
@@ -14,7 +14,7 @@ interface ControlPanelProps {
   vacationSelected: SelectedVacationType;
   setVacationSelected: Dispatch<SetStateAction<SelectedVacationType>>;
   savedVacations: SavedVacationType[];
-  addSavedVacation: Dispatch<SetStateAction<SavedVacationType>>;
+  addSavedVacation: (newSavedVacation: SavedVacationType) => void;
 }
 
 const dateFormat = "d MMM y";
@@ -26,11 +26,10 @@ const ControlPanel = ({
   addSavedVacation,
 }: ControlPanelProps) => {
   const [vacationDays, setVacationDays] = useState<number>(0);
-  const [tripName, setTripName] = useState<string>("");
   const [colorModalOpened, setColorModalOpened] = useState<boolean>();
 
   const selectedRangeString = (): string => {
-    if (!isRangeSelected(vacationSelected.range)) {
+    if (!isRangeSelected(vacationSelected)) {
       return "";
     }
     return `${format(vacationSelected.range.from, dateFormat)} - ${format(
@@ -40,7 +39,7 @@ const ControlPanel = ({
   };
 
   const handleTripSave = () => {
-    if (!vacationSelected?.range.from || !vacationSelected?.range.to) return;
+    if (!isRangeSelected(vacationSelected)) return;
 
     addSavedVacation(vacationSelected); // TODO should conform to DeeplyRequired type of saved vacation
   };
@@ -117,7 +116,7 @@ const ControlPanel = ({
         <button
           type="button"
           disabled={
-            !isRangeSelected(vacationSelected.range) || !vacationSelected.name
+            !isRangeSelected(vacationSelected) || !vacationSelected.name
           }
           onClick={handleTripSave}
         >

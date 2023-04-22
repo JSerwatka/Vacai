@@ -88,7 +88,7 @@ const Calendar = ({
   const modifiers = {
     weekendDays: (date: Date) => isWeekendOrHoliday(date, holidays),
     betweenRangeDays: (date: Date) => {
-      if (isRangeSelected(vacationSelected?.range)) {
+      if (isRangeSelected(vacationSelected)) {
         return isRangeMiddle(date, vacationSelected.range);
       }
       return false;
