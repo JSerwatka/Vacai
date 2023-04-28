@@ -56,34 +56,41 @@ const Calendar = ({
   // };
 
   const handleDayClick = (day: Date) => {
-    const startNewRange =
-      !vacationSelected?.range.from ||
-      vacationSelected.range.to ||
-      isBefore(day, vacationSelected?.range.from);
+    setVacationSelected((prevState) => {
+      // start new range?
+      if (
+        prevState?.range.from === undefined ||
+        prevState.range.to ||
+        (isBefore(day, prevState?.range.from) as boolean)
+      ) {
+        return {
+          ...prevState,
+          range: {
+            from: day,
+            to: undefined,
+          },
+          calendarDays: 0,
+          bussinessDays: 0,
+        };
+      }
 
-    if (startNewRange) {
-      setVacationSelected((prevState) => ({
+      return {
         ...prevState,
         range: {
-          from: day,
-          to: undefined,
+          ...prevState.range,
+          to: day,
         },
-        calendarDays: 0,
-        bussinessDays: 0,
-      }));
-      return;
-    }
-
-    setVacationSelected((prevState) => ({
-      ...prevState,
-      range: {
-        ...prevState.range,
-        to: day,
-      },
-      calendarDays: differenceInCalendarDays(day, prevState.range.from) + 1,
-      bussiness: differenceInBusinessDays(day, prevState.range.from, holidays),
-    }));
+        calendarDays: differenceInCalendarDays(day, prevState.range.from) + 1,
+        bussinessDays: differenceInBusinessDays(
+          day,
+          prevState.range.from,
+          holidays
+        ),
+      };
+    });
   };
+
+  console.log(vacationSelected);
 
   const modifiers = {
     weekendDays: (date: Date) => isWeekendOrHoliday(date, holidays),
