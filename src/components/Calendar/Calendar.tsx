@@ -16,8 +16,6 @@ import {
   differenceInBusinessDays,
   isWeekendOrHoliday,
 } from "../../utils/dateFunctions";
-import isWithinInterval from "date-fns/isWithinInterval";
-import { Interval } from "date-fns";
 import { isRangeSelected } from "../../utils/rangeSelectedTypeGuard";
 
 interface CalendarProps {
@@ -89,8 +87,6 @@ const Calendar = ({
       };
     });
   };
-
-  console.log(vacationSelected);
 
   const modifiers = {
     weekendDays: (date: Date) => isWeekendOrHoliday(date, holidays),

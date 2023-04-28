@@ -25,6 +25,10 @@ export interface SelectedVacationType {
   name: string;
 }
 
+// TODO: hover on trip or calendar trip should mark coresponding trip in calender/trip
+// TODO: trip name should be unique
+// TODO: trips cannot overlap
+
 function App() {
   const { holidays, error } = usePublicHolidays({
     year: 2023,

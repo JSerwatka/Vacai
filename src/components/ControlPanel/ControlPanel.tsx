@@ -1,4 +1,10 @@
-import { useState, Dispatch, SetStateAction } from "react";
+import {
+  useState,
+  Dispatch,
+  SetStateAction,
+  useMemo,
+  useDeferredValue,
+} from "react";
 import {
   DaysHoveredType,
   SavedVacationType,
@@ -26,6 +32,7 @@ const ControlPanel = ({
   addSavedVacation,
 }: ControlPanelProps) => {
   const [vacationDays, setVacationDays] = useState<number>(0);
+  const vacationsDaysDeffered = useDeferredValue(vacationDays);
   const [colorModalOpened, setColorModalOpened] = useState<boolean>();
 
   const selectedRangeString = (): string => {
@@ -44,6 +51,13 @@ const ControlPanel = ({
     addSavedVacation(vacationSelected); // TODO should conform to DeeplyRequired type of saved vacation
   };
 
+  const vacationDaysLeft = useMemo(() => {
+    return savedVacations.reduce(
+      (acc, current) => acc - current.bussinessDays,
+      vacationDays
+    );
+  }, [savedVacations.length, vacationsDaysDeffered]);
+
   return (
     <aside className={styles.control_panel_wrapper}>
       <input
@@ -52,6 +66,7 @@ const ControlPanel = ({
         value={vacationDays}
         onChange={(e) => setVacationDays(Number(e.target.value))}
       />
+      <div>Days left = {vacationDaysLeft}</div>
 
       <h1>Trips:</h1>
 
