@@ -48,7 +48,17 @@ const ControlPanel = ({
   const handleTripSave = () => {
     if (!isRangeSelected(vacationSelected)) return;
 
-    addSavedVacation(vacationSelected); // TODO should conform to DeeplyRequired type of saved vacation
+    addSavedVacation(vacationSelected);
+    setVacationSelected({
+      range: {
+        from: undefined,
+        to: undefined,
+      },
+      bussinessDays: 0,
+      calendarDays: 0,
+      color: "#4caf50",
+      name: "",
+    });
   };
 
   const vacationDaysLeft = useMemo(() => {
