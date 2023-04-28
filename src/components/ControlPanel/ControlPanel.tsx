@@ -78,8 +78,11 @@ const ControlPanel = ({
           }}
           key={savedTrip.name}
         >
+          <div
+            className={styles.trip_color}
+            style={{ backgroundColor: savedTrip.color }}
+          ></div>
           <div>{savedTrip.name}</div>
-          <div>{savedTrip.color}</div>
           <div>
             {format(savedTrip.range.from, dateFormat)} -{" "}
             {format(savedTrip.range.to, dateFormat)}

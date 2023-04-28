@@ -19,3 +19,9 @@
   width: 100px;
   display: flex;
 }
+
+.trip_color {
+  height: 20px;
+  width: 20px;
+  border-radius: 100%;
+}
