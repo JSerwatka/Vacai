@@ -17,21 +17,21 @@ import {
   isWeekendOrHoliday,
 } from "../../utils/dateFunctions";
 import { isRangeSelected } from "../../utils/rangeSelectedTypeGuard";
+import {
+  useVacationSelectedContext,
+  useVacationSelectedDispatch,
+} from "../contexts/VacationSelectedProvider";
 
 interface CalendarProps {
-  vacationSelected: SelectedVacationType;
-  setVacationSelected: Dispatch<SetStateAction<SelectedVacationType>>;
   setDaysHovered: ({ calendar, bussiness }: DaysHoveredType) => void;
-  holidays: HolidayType[] | null;
+  holidays: HolidayType[];
   savedVacations: SavedVacationType[];
 }
 
-const Calendar = ({
-  vacationSelected,
-  setVacationSelected,
-  holidays,
-  savedVacations,
-}: CalendarProps) => {
+const Calendar = ({ holidays, savedVacations }: CalendarProps) => {
+  const vacationSelected = useVacationSelectedContext();
+  const vacationSelectedDispatch = useVacationSelectedDispatch();
+
   // const handleDayMouseEnter = (date: Date) => {
   //   if (!vacationSelected?.from || vacationSelected.to) return;
 
@@ -54,37 +54,22 @@ const Calendar = ({
   // };
 
   const handleDayClick = (day: Date) => {
-    setVacationSelected((prevState) => {
-      // start new range?
-      if (
-        prevState?.range.from === undefined ||
-        prevState.range.to ||
-        (isBefore(day, prevState?.range.from) as boolean)
-      ) {
-        return {
-          ...prevState,
-          range: {
-            from: day,
-            to: undefined,
-          },
-          calendarDays: 0,
-          bussinessDays: 0,
-        };
-      }
+    // start new range?
+    if (
+      vacationSelected?.range.from === undefined ||
+      vacationSelected.range.to ||
+      (isBefore(day, vacationSelected?.range.from) as boolean)
+    ) {
+      vacationSelectedDispatch({ type: "SET_RANGE_START", value: day });
+      return;
+    }
 
-      return {
-        ...prevState,
-        range: {
-          ...prevState.range,
-          to: day,
-        },
-        calendarDays: differenceInCalendarDays(day, prevState.range.from) + 1,
-        bussinessDays: differenceInBusinessDays(
-          day,
-          prevState.range.from,
-          holidays
-        ),
-      };
+    vacationSelectedDispatch({
+      type: "SET_RANGE_END",
+      value: {
+        to: day,
+        holidays: holidays,
+      },
     });
   };
 

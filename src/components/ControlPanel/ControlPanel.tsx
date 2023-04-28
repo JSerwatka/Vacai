@@ -15,10 +15,12 @@ import format from "date-fns/format";
 import { CirclePicker } from "react-color";
 import styles from "./ControlPanel.module.css";
 import { isRangeSelected } from "../../utils/rangeSelectedTypeGuard";
+import {
+  useVacationSelectedContext,
+  useVacationSelectedDispatch,
+} from "../contexts/VacationSelectedProvider";
 
 interface ControlPanelProps {
-  vacationSelected: SelectedVacationType;
-  setVacationSelected: Dispatch<SetStateAction<SelectedVacationType>>;
   savedVacations: SavedVacationType[];
   addSavedVacation: (newSavedVacation: SavedVacationType) => void;
 }
@@ -26,14 +28,14 @@ interface ControlPanelProps {
 const dateFormat = "d MMM y";
 
 const ControlPanel = ({
-  vacationSelected,
-  setVacationSelected,
   savedVacations,
   addSavedVacation,
 }: ControlPanelProps) => {
   const [vacationDays, setVacationDays] = useState<number>(0);
   const vacationsDaysDeffered = useDeferredValue(vacationDays);
   const [colorModalOpened, setColorModalOpened] = useState<boolean>();
+  const vacationSelected = useVacationSelectedContext();
+  const vacationSelectedDispatch = useVacationSelectedDispatch();
 
   const selectedRangeString = (): string => {
     if (!isRangeSelected(vacationSelected)) {
@@ -49,16 +51,7 @@ const ControlPanel = ({
     if (!isRangeSelected(vacationSelected)) return;
 
     addSavedVacation(vacationSelected);
-    setVacationSelected({
-      range: {
-        from: undefined,
-        to: undefined,
-      },
-      bussinessDays: 0,
-      calendarDays: 0,
-      color: "#4caf50",
-      name: "",
-    });
+    vacationSelectedDispatch({ type: "RESET" });
   };
 
   const vacationDaysLeft = useMemo(() => {
@@ -108,10 +101,7 @@ const ControlPanel = ({
           placeholder="trip name"
           value={vacationSelected.name}
           onChange={(e) =>
-            setVacationSelected((prevState) => ({
-              ...prevState,
-              name: e.target.value,
-            }))
+            vacationSelectedDispatch({ type: "RENAME", value: e.target.value })
           }
         ></input>
         <div className={styles.color_btn_wrapper}>
@@ -129,10 +119,10 @@ const ControlPanel = ({
               <CirclePicker
                 color={vacationSelected.color}
                 onChangeComplete={(color) => {
-                  setVacationSelected((prevState) => ({
-                    ...prevState,
-                    color: color.hex,
-                  }));
+                  vacationSelectedDispatch({
+                    type: "CHANGE_COLOR",
+                    value: color.hex,
+                  });
                   setColorModalOpened(false);
                 }}
                 circleSpacing={5}

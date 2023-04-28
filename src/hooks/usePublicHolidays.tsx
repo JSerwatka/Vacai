@@ -33,9 +33,7 @@ interface usePublicHolidaysProps {
 }
 
 const usePublicHolidays = ({ year, countryCode }: usePublicHolidaysProps) => {
-  const [publicHolidays, setPublicHolidays] = useState<HolidayType[] | null>(
-    null
-  );
+  const [publicHolidays, setPublicHolidays] = useState<HolidayType[]>([]);
   const [fetchError, setFetchError] = useState<string>("");
 
   useEffect(() => {

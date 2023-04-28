@@ -1,18 +1,23 @@
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
 import { differenceInBusinessDays } from "../../utils/dateFunctions";
 import { SelectedVacationType } from "../../App";
+import { HolidayType } from "../../types/HolidayType";
 
-type REDUCER_ACTION_TYPE =
-  | "RENAME"
-  | "RESET"
-  | "CHANGE_COLOR"
-  | "SET_RANGE_START"
-  | "SET_RANGE_END";
-
-export type ReducerAction = {
-  type: REDUCER_ACTION_TYPE;
-  value?: #TODO;
-};
+export type ReducerAction =
+  | { type: "RESET" }
+  | { type: "RENAME"; value: SelectedVacationType["name"] }
+  | { type: "CHANGE_COLOR"; value: SelectedVacationType["color"] }
+  | {
+      type: "SET_RANGE_START";
+      value: NonNullable<SelectedVacationType["range"]["from"]>;
+    }
+  | {
+      type: "SET_RANGE_END";
+      value: {
+        to: NonNullable<SelectedVacationType["range"]["to"]>;
+        holidays: HolidayType[];
+      };
+    };
 
 export const initState = {
   range: {
@@ -30,13 +35,13 @@ export const vacationSelectedReducer = (
   action: ReducerAction
 ): SelectedVacationType => {
   switch (action.type) {
+    case "RESET":
+      return initState;
     case "RENAME":
       return {
         ...state,
         name: action.value,
       };
-    case "RESET":
-      return initState;
     case "CHANGE_COLOR":
       return {
         ...state,
@@ -53,6 +58,10 @@ export const vacationSelectedReducer = (
         bussinessDays: 0,
       };
     case "SET_RANGE_END":
+      if (!state.range.from) {
+        return state;
+      } // TODO make safer
+
       return {
         ...state,
         range: {
@@ -60,7 +69,7 @@ export const vacationSelectedReducer = (
           to: action.value.to,
         },
         calendarDays:
-          differenceInCalendarDays(action.value, state.range.from) + 1,
+          differenceInCalendarDays(action.value.to, state.range.from) + 1,
         bussinessDays: differenceInBusinessDays(
           action.value.to,
           state.range.from,
@@ -68,6 +77,6 @@ export const vacationSelectedReducer = (
         ),
       };
     default:
-      throw new Error("Unknown action type " + action.type);
+      throw new Error("Unknown action type");
   }
 };

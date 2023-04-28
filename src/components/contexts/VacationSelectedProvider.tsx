@@ -1,4 +1,4 @@
-import { createContext, useReducer } from "react";
+import { createContext, useReducer, useContext } from "react";
 import {
   ReducerAction,
   initState,
@@ -10,9 +10,10 @@ interface VacationSelectedProviderProps {
   children: React.ReactNode;
 }
 
-export const VacationSelectedContext =
-  createContext<SelectedVacationType | null>(null);
-export const VacationSelectedDispatchContext =
+const VacationSelectedContext = createContext<SelectedVacationType | null>(
+  null
+);
+const VacationSelectedDispatchContext =
   createContext<React.Dispatch<ReducerAction> | null>(null);
 
 const VacationSelectedProvider = ({
@@ -31,6 +32,28 @@ const VacationSelectedProvider = ({
       </VacationSelectedContext.Provider>
     </>
   );
+};
+
+export const useVacationSelectedContext = () => {
+  const context = useContext(VacationSelectedContext);
+
+  if (context === null) {
+    throw new Error(
+      "useVacationSelectedContext must be used within a VacationSelectedProvider"
+    );
+  }
+
+  return context;
+};
+export const useVacationSelectedDispatch = () => {
+  const context = useContext(VacationSelectedDispatchContext);
+
+  if (context === null) {
+    throw new Error(
+      "useVacationSelectedContext must be used within a VacationSelectedDispatchProvider"
+    );
+  }
+  return context;
 };
 
 export default VacationSelectedProvider;

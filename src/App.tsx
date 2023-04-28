@@ -7,6 +7,7 @@ import "./App.css";
 import { HolidayType } from "./types/HolidayType";
 import { DateRange } from "react-day-picker";
 import { DeepRequired } from "./types/DeepRequired";
+import VacationSelectedProvider from "./components/contexts/VacationSelectedProvider";
 
 export type DateRangeRequired = DeepRequired<DateRange>;
 
@@ -35,18 +36,6 @@ function App() {
     countryCode: "PL",
   });
 
-  const [vacationSelected, setVacationSelected] =
-    useState<SelectedVacationType>({
-      range: {
-        from: undefined,
-        to: undefined,
-      },
-      bussinessDays: 0,
-      calendarDays: 0,
-      color: "#4caf50",
-      name: "",
-    });
-
   const [daysHovered, setDaysHovered] = useState<DaysHoveredType>({
     calendar: 0,
     bussiness: 0,
@@ -67,19 +56,17 @@ function App() {
         display: "flex",
       }}
     >
-      <Calendar
-        setDaysHovered={setDaysHovered}
-        holidays={holidays}
-        vacationSelected={vacationSelected}
-        setVacationSelected={setVacationSelected}
-        savedVacations={savedVacations}
-      />
-      <ControlPanel
-        vacationSelected={vacationSelected}
-        setVacationSelected={setVacationSelected}
-        savedVacations={savedVacations}
-        addSavedVacation={addSavedVacation}
-      />
+      <VacationSelectedProvider>
+        <Calendar
+          setDaysHovered={setDaysHovered}
+          holidays={holidays}
+          savedVacations={savedVacations}
+        />
+        <ControlPanel
+          savedVacations={savedVacations}
+          addSavedVacation={addSavedVacation}
+        />
+      </VacationSelectedProvider>
     </div>
   );
 }
