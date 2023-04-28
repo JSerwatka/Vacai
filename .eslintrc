@@ -1,0 +1,126 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:import/recommended",
+        "plugin:import/typescript",
+        "plugin:@typescript-eslint/strict",
+        "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module",
+        "project": ["tsconfig.json"]
+    },
+    "plugins": ["react", "@typescript-eslint", "react-hooks", "import", "simple-import-sort"],
+    "ignorePatterns": ["jest.config.js", "jest.setup.js"],
+    "rules": {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-no-bind": "warn",
+        "react/no-danger-with-children": "warn",
+        "react/no-children-prop": "error",
+        "react/no-array-index-key": "error",
+        "react/button-has-type": "error",
+        "react/jsx-curly-brace-presence": ["error", { "props": "never" }],
+        // disallow assignments that can lead to race conditions due to usage of await or yield
+        "require-atomic-updates": "error",
+        // disallow unmodified loop conditions
+        "no-unmodified-loop-condition": "error",
+        // disallow loops with a body that allows only one iteration
+        "no-unreachable-loop": "error",
+        // using @typescript-eslint/no-dupe-class-members instead
+        "no-dupe-class-members": "off",
+        // using eslint-plugin-import instead
+        "no-duplicate-imports": "off",
+        // disallow template literal placeholder syntax in regular strings
+        "no-template-curly-in-string": "error",
+        // disallow comparisons where both sides are exactly the same
+        "no-self-compare": "error",
+        "@typescript-eslint/no-floating-promises": "warn",
+        // enforce using specified convention for naming variables and types
+        "@typescript-eslint/naming-convention": [
+            "error",
+            {
+                "selector": "enumMember",
+                "format": ["UPPER_CASE"]
+            },
+            {
+                "selector": "typeLike",
+                "format": ["PascalCase"]
+            },
+            // enforce that interface names do not begin with I
+            {
+                "selector": "interface",
+                "format": ["PascalCase"],
+                "custom": {
+                    "regex": "^I[A-Z]",
+                    "match": false
+                }
+            }
+        ],
+        //
+        "@typescript-eslint/no-unnecessary-condition": "off",
+        // allow promise<void> for events https://stackoverflow.com/a/73944767
+        "@typescript-eslint/no-misused-promises": [
+            "error",
+            { "checksVoidReturn": { "attributes": false } }
+        ],
+        // disallow the declaration of empty interface if no 'extends' present
+        "@typescript-eslint/no-confusing-void-expression": [
+            "error",
+            {
+                "ignoreArrowShorthand": true
+            }
+        ],
+        "@typescript-eslint/no-explicit-any": "error",
+        // disallow usage of require
+        "@typescript-eslint/no-require-imports": "error",
+        // disallow empty exports that don't change anything in a module file
+        "@typescript-eslint/no-useless-empty-export": "error",
+        // require each enum member value to be explicitly initialized.
+        "@typescript-eslint/prefer-enum-initializers": "error",
+        "@typescript-eslint/restrict-template-expressions": [
+            "error",
+            {
+                "allowBoolean": true
+            }
+        ],
+        // sort type union members
+        "@typescript-eslint/sort-type-union-intersection-members": "error",
+        // require switch-case statements to be exhaustive with union type
+        "@typescript-eslint/switch-exhaustiveness-check": "error",
+        // enforce default parameters to be last
+        "@typescript-eslint/default-param-last": "error",
+        // disallow duplicate class members
+        "@typescript-eslint/no-dupe-class-members": "error",
+        // disallow variable redeclaration
+        "@typescript-eslint/no-redeclare": "error",
+        // requires that a returned promise must be awaited in try-catch-finally blocks, and disallows it elsewhere
+        "@typescript-eslint/return-await": ["error", "in-try-catch"],
+        /**
+         * Plugin eslint-plugin-import
+         */
+        "import/namespace": "off",
+        // using eslint-plugin-simple-import-sort instead
+        "import/order": "off",
+        "import/newline-after-import": ["error", { "count": 1 }],
+        /**
+         * Plugin eslint-plugin-simple-import-sort
+         */
+        // enforce sorting imports
+        "simple-import-sort/imports": "error",
+        // enforce sorting exports
+        "simple-import-sort/exports": "error",
+        "@typescript-eslint/unbound-method": "warn"
+    }
+}

@@ -1,13 +1,14 @@
 type NotNill<T> = T extends null | undefined ? never : T;
 
-type Primitive = undefined | null | boolean | string | number | Function;
+// eslint-disable-next-line @typescript-eslint/ban-types
+type Primitive = Function | boolean | number | string | null | undefined;
 
 export type DeepRequired<T> = T extends Primitive
-  ? NotNill<T>
-  : {
-      [P in keyof T]-?: T[P] extends Array<infer U>
-        ? Array<DeepRequired<U>>
-        : T[P] extends ReadonlyArray<infer U2>
-        ? DeepRequired<U2>
-        : DeepRequired<T[P]>;
-    };
+    ? NotNill<T>
+    : {
+          [P in keyof T]-?: T[P] extends (infer U)[]
+              ? DeepRequired<U>[]
+              : T[P] extends readonly (infer U2)[]
+              ? DeepRequired<U2>
+              : DeepRequired<T[P]>;
+      };
