@@ -4,7 +4,7 @@ import {
   initState,
   vacationSelectedReducer,
 } from "../reducers/VacationSelectedReducer";
-import { SelectedVacationType } from "../../App";
+import { SelectedVacationType } from "../types/VacationTypes";
 
 interface VacationSelectedProviderProps {
   children: React.ReactNode;

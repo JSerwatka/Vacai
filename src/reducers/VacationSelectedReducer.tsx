@@ -1,7 +1,7 @@
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
-import { differenceInBusinessDays } from "../../utils/dateFunctions";
-import { SelectedVacationType } from "../../App";
-import { HolidayType } from "../../types/HolidayType";
+import { differenceInBusinessDays } from "../utils/dateFunctions";
+import { HolidayType } from "../types/HolidayType";
+import { SelectedVacationType } from "../types/VacationTypes";
 
 export type ReducerAction =
   | { type: "RESET" }

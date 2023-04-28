@@ -7,24 +7,11 @@ import "./App.css";
 import { HolidayType } from "./types/HolidayType";
 import { DateRange } from "react-day-picker";
 import { DeepRequired } from "./types/DeepRequired";
-import VacationSelectedProvider from "./components/contexts/VacationSelectedProvider";
-
-export type DateRangeRequired = DeepRequired<DateRange>;
-
-export type SavedVacationType = DeepRequired<SelectedVacationType>;
-
-export interface DaysHoveredType {
-  calendar: number;
-  bussiness: number;
-}
-
-export interface SelectedVacationType {
-  range: DateRange;
-  bussinessDays: number;
-  calendarDays: number;
-  color: string;
-  name: string;
-}
+import VacationSelectedProvider from "./contexts/VacationSelectedProvider";
+import { DaysHoveredType, SavedVacationType } from "./types/VacationTypes";
+import VacationDaysInput from "./components/VacationDaysInput/VacationDaysInput";
+import SavedVacationList from "./components/SavedVacationList/SavedVacationList";
+import NewVacationForm from "./components/NewVacationForm/NewVacationForm";
 
 // TODO: hover on trip or calendar trip should mark coresponding trip in calender/trip
 // TODO: trip name should be unique
@@ -62,10 +49,11 @@ function App() {
           holidays={holidays}
           savedVacations={savedVacations}
         />
-        <ControlPanel
-          savedVacations={savedVacations}
-          addSavedVacation={addSavedVacation}
-        />
+        <ControlPanel>
+          <VacationDaysInput savedVacations={savedVacations} />
+          <SavedVacationList savedVacations={savedVacations} />
+          <NewVacationForm addSavedVacation={addSavedVacation} />
+        </ControlPanel>
       </VacationSelectedProvider>
     </div>
   );

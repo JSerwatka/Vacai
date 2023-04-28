@@ -4,12 +4,6 @@ import "react-day-picker/dist/style.css";
 import styles from "./Calendar.module.css";
 import isSameDay from "date-fns/isSameDay";
 import differenceInCalendarDays from "date-fns/differenceInCalendarDays";
-import {
-  DateRangeRequired,
-  DaysHoveredType,
-  SavedVacationType,
-  SelectedVacationType,
-} from "../../App";
 import { HolidayType } from "../../types/HolidayType";
 import isBefore from "date-fns/isBefore";
 import {
@@ -20,7 +14,12 @@ import { isRangeSelected } from "../../utils/rangeSelectedTypeGuard";
 import {
   useVacationSelectedContext,
   useVacationSelectedDispatch,
-} from "../contexts/VacationSelectedProvider";
+} from "../../contexts/VacationSelectedProvider";
+import {
+  DateRangeRequired,
+  DaysHoveredType,
+  SavedVacationType,
+} from "../../types/VacationTypes";
 
 interface CalendarProps {
   setDaysHovered: ({ calendar, bussiness }: DaysHoveredType) => void;
